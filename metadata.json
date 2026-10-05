@@ -1,0 +1,6 @@
+{
+  "name": "Aura Parfums - Perfumaria Fina",
+  "description": "Loja exclusiva de perfumes importados e fragrâncias de nicho com notas marcantes e entrega rápida.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
