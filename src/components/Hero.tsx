@@ -53,7 +53,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onQuizClick }) => {
                 <ShieldCheck className="w-5 h-5 text-amber-800 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="text-xs font-semibold text-stone-900">100% Originais</h4>
-                  <p className="text-[11px] text-stone-500">Selo de garantia</p>
+                  <p className="text-[11px] text-stone-500">Garantia em Moçambique</p>
                 </div>
               </div>
 
@@ -69,7 +69,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onQuizClick }) => {
                 <Gift className="w-5 h-5 text-amber-800 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="text-xs font-semibold text-stone-900">2 Amostras</h4>
-                  <p className="text-[11px] text-stone-500">Brinde em compras</p>
+                  <p className="text-[11px] text-stone-500">Oferta na encomenda</p>
                 </div>
               </div>
             </div>

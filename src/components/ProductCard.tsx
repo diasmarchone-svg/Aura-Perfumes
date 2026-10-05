@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Perfume } from '../types';
 import { Star, Check, Plus, Eye } from 'lucide-react';
+import { formatMetical } from '../utils/format';
 
 interface ProductCardProps {
   perfume: Perfume;
@@ -17,7 +18,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [isAdded, setIsAdded] = useState(false);
 
   const currentPrice = selectedSize === '50ml' ? perfume.price50ml : perfume.price100ml;
-  const installments = (currentPrice / 6).toFixed(2).replace('.', ',');
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,7 +49,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           )}
           {perfume.isNew && (
             <span className="text-[11px] font-medium tracking-wider uppercase bg-amber-800/90 text-white px-2.5 py-0.5 rounded shadow-sm">
-              Lançamento
+              Novidade
             </span>
           )}
         </div>
@@ -109,7 +109,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Size Selector */}
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-xs text-stone-500">Volume:</span>
+            <span className="text-xs text-stone-500">Frasco:</span>
             <div className="flex items-center gap-1.5 bg-stone-100 p-0.5 rounded-md" onClick={(e) => e.stopPropagation()}>
               <button
                 type="button"
@@ -141,10 +141,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between gap-2">
           <div>
             <div className="text-lg font-serif font-bold text-stone-900">
-              R$ {currentPrice},00
+              {formatMetical(currentPrice)}
             </div>
             <div className="text-[11px] text-stone-500">
-              ou 6x de R$ {installments}
+              M-Pesa · e-Mola · Cartão
             </div>
           </div>
 
@@ -159,7 +159,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {isAdded ? (
               <>
                 <Check className="w-3.5 h-3.5" />
-                <span>No carrinho</span>
+                <span>No cesto</span>
               </>
             ) : (
               <>
@@ -173,3 +173,4 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </div>
   );
 };
+

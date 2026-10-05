@@ -5,23 +5,23 @@ export const Guarantees: React.FC = () => {
   const pillars = [
     {
       icon: Award,
-      title: '100% Originais & Lacrados',
-      desc: 'Perfumes com selo de garantia de procedência, importação oficial e nota fiscal.',
+      title: '100% Originais & Selados',
+      desc: 'Perfumes com garantia de procedência oficial das maiores casas de essências do mundo.',
     },
     {
       icon: Clock,
       title: 'Fixação Comprovada 12h+',
-      desc: 'Formulação rica em óleos essenciais nobres garantindo projeção e rastro duradouro.',
+      desc: 'Formulação rica em óleos nobres com excelente desempenho no clima de Moçambique.',
     },
     {
       icon: Sparkles,
       title: '2 Amostras Grátis',
-      desc: 'Todo pedido acompanha 2 flaconetes de 2ml das novidades para você experimentar.',
+      desc: 'Toda encomenda acompanha 2 flaconetes de 2ml para experimentar novidades.',
     },
     {
       icon: RefreshCw,
-      title: 'Troca Fácil & Segura',
-      desc: 'Garantia total de satisfação: 7 dias para troca sem complicação ou devolução integral.',
+      title: 'Entregas em Moçambique',
+      desc: 'Entregas rápidas em Maputo e Matola em até 24h e envios seguros para todas as províncias.',
     },
   ];
 

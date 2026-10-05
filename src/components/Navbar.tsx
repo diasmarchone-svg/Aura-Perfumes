@@ -36,11 +36,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Top Announcement Bar */}
       <div className="bg-stone-900 text-stone-200 text-xs py-2 px-4 text-center font-normal tracking-wide">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-          <span>✨ <strong>Frete Grátis</strong> para todo o Brasil acima de R$ 250</span>
+          <span>✨ <strong>Entrega Grátis</strong> para todo Moçambique acima de 4.000 MT</span>
           <span className="hidden sm:inline text-stone-500">|</span>
           <span className="hidden sm:inline">2 Amostras de Luxo de Brinde</span>
           <span className="hidden sm:inline text-stone-500">|</span>
-          <span className="hidden md:inline">Até 6x sem juros no cartão</span>
+          <span className="hidden md:inline">Pagamento seguro via M-Pesa, e-Mola & Cartão</span>
         </div>
       </div>
 

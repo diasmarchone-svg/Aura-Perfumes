@@ -7,23 +7,23 @@ export const FaqSection: React.FC = () => {
   const faqs = [
     {
       q: 'Os perfumes são 100% originais?',
-      a: 'Sim, absolutamente todos os nossos frascos são originais, lacrados de fábrica, com lote verificável, garantia de procedência das maiores casas de essências do mundo e emissão de nota fiscal eletrônica.',
+      a: 'Sim, absolutamente todos os nossos frascos são originais, selados de fábrica, com lote verificável e garantia de autenticidade das maiores casas perfumistas internacionais.',
+    },
+    {
+      q: 'Quais as formas de pagamento disponíveis em Moçambique?',
+      a: 'Aceitamos M-Pesa (Vodacom), e-Mola (Movitel), Transferência Bancária (Millennium BIM / BCI) e Cartões Visa/Mastercard. Pode também concluir e enviar o comprovativo diretamente pelo nosso WhatsApp.',
+    },
+    {
+      q: 'Como funcionam os prazos de entrega e a Entrega Grátis?',
+      a: 'Oferecemos Entrega Grátis em compras a partir de 3.500 MT. Para Maputo Cidade e Matola, as entregas são efetuadas em até 24 horas por estafeta próprio. Para as restantes províncias (Beira, Nampula, Tete, Pemba, etc.), os envios demoram entre 48h a 72h.',
     },
     {
       q: 'Qual a diferença entre Eau de Parfum (EDP) e Eau de Toilette (EDT)?',
-      a: 'A principal diferença é a concentração de óleos essenciais puros. Eau de Parfum possui entre 15% e 20% de concentração, fixando por 10 a 16 horas. O Eau de Toilette possui em torno de 8% a 12%, sendo mais fresco e ideal para reaplicar em climas quentes.',
+      a: 'A principal diferença é a concentração de essência pura. O Eau de Parfum tem entre 15% e 20% de concentração, garantindo fixação prolongada de 10h a 16h no clima tropical de Moçambique. O Eau de Toilette possui cerca de 8% a 12%, sendo mais fresco.',
     },
     {
-      q: 'Como funciona o Frete Grátis e prazo de entrega?',
-      a: 'Oferecemos Frete Grátis para todo o Brasil em compras acima de R$ 250,00. Nossos pedidos são despachados em até 24 horas úteis via transportadora expressa ou Sedex, com código de rastreio enviado imediatamente para seu e-mail e WhatsApp.',
-    },
-    {
-      q: 'Como fazer o perfume durar ainda mais na minha pele?',
-      a: 'Borrife nas áreas de maior pulsação sanguínea (pulsos, nuca, atrás das orelhas e dobra dos cotovelos). Hidratar a pele antes com um hidratante neutro retém os óleos essenciais por muito mais tempo. Evite esfregar os pulsos após a aplicação para não quebrar as moléculas de topo.',
-    },
-    {
-      q: 'Posso trocar se a fragrância não combinar comigo?',
-      a: 'Sim! Com nosso programa de Satisfação Garantida, você pode solicitar a troca ou devolução em até 7 dias corridos após o recebimento. Para sua conveniência, enviamos 2 amostras grátis para você testar antes mesmo de deslacrar o frasco principal.',
+      q: 'Posso encomendar e receber no meu local de trabalho ou residência?',
+      a: 'Sim! Entregamos em residências, condomínios e escritórios em Maputo, Matola e cidades provinciais. Nosso estafeta entra em contacto telefónico antes da entrega.',
     },
   ];
 

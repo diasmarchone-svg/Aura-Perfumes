@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Perfume } from '../types';
 import { X, Star, ShoppingBag, ShieldCheck, Clock, Sparkles, Check } from 'lucide-react';
+import { formatMetical } from '../utils/format';
 
 interface ProductModalProps {
   perfume: Perfume | null;
@@ -21,7 +22,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const price = selectedSize === '50ml' ? perfume.price50ml : perfume.price100ml;
   const totalPrice = price * quantity;
-  const installments = (totalPrice / 6).toFixed(2).replace('.', ',');
 
   const handleAdd = () => {
     onAddToCart(perfume, selectedSize, quantity);
@@ -167,7 +167,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                           : 'bg-white text-stone-700 border-stone-300 hover:border-stone-500'
                       }`}
                     >
-                      50ml - R$ {perfume.price50ml}
+                      50ml - {formatMetical(perfume.price50ml)}
                     </button>
                     <button
                       type="button"
@@ -178,7 +178,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                           : 'bg-white text-stone-700 border-stone-300 hover:border-stone-500'
                       }`}
                     >
-                      100ml - R$ {perfume.price100ml}
+                      100ml - {formatMetical(perfume.price100ml)}
                     </button>
                   </div>
                 </div>
@@ -211,10 +211,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               <div className="flex items-center justify-between gap-4 pt-2">
                 <div>
                   <div className="text-2xl font-serif font-bold text-stone-900">
-                    R$ {totalPrice},00
+                    {formatMetical(totalPrice)}
                   </div>
                   <div className="text-[11px] text-stone-500">
-                    ou em até 6x de R$ {installments} sem juros
+                    M-Pesa · e-Mola · Entrega em todo Moçambique
                   </div>
                 </div>
 
@@ -235,7 +235,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   ) : (
                     <>
                       <ShoppingBag className="w-4 h-4" />
-                      <span>Adicionar ao Carrinho</span>
+                      <span>Adicionar ao Cesto</span>
                     </>
                   )}
                 </button>

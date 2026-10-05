@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CartItem } from '../types';
-import { X, CheckCircle2, QrCode, CreditCard, MessageCircle, Copy, Check, ShieldCheck } from 'lucide-react';
+import { X, CheckCircle2, Smartphone, CreditCard, MessageCircle, Copy, Check, ShieldCheck, MapPin } from 'lucide-react';
+import { formatMetical } from '../utils/format';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -21,19 +22,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'cartao' | 'whatsapp'>('pix');
+  const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'emola' | 'transferencia' | 'whatsapp'>('mpesa');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
+  const [province, setProvince] = useState('Maputo Cidade');
+  const [neighborhood, setNeighborhood] = useState('');
+  const [addressDetails, setAddressDetails] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
-  const [copiedPix, setCopiedPix] = useState(false);
+  const [copiedAccount, setCopiedAccount] = useState(false);
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const pixDiscount = paymentMethod === 'pix' ? Math.round((subtotal - discount) * 0.05) : 0;
-  const total = Math.max(0, subtotal - discount - pixDiscount + shipping);
+  const total = Math.max(0, subtotal - discount + shipping);
 
-  const orderNumber = 'AUR-' + Math.floor(100000 + Math.random() * 900000);
+  const orderNumber = 'MOZ-' + Math.floor(100000 + Math.random() * 900000);
+
+  const mpesaNumber = '84 555 7890';
+  const emolaNumber = '87 555 7890';
+  const bimNib = '0001 0000 0012 3456 7890 1';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,26 +46,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     if (paymentMethod === 'whatsapp') {
       const summaryText = items
-        .map((i) => `• ${i.perfume.name} (${i.size}) x${i.quantity} = R$ ${i.price * i.quantity}`)
+        .map((i) => `• ${i.perfume.name} (${i.size}) x${i.quantity} = ${formatMetical(i.price * i.quantity)}`)
         .join('\n');
       const message = encodeURIComponent(
-        `Olá! Gostaria de finalizar meu pedido na Aura Parfums:\n\n${summaryText}\n\n*Total:* R$ ${total},00\n*Nome:* ${name}\n*Endereço:* ${address} - ${city}`
+        `Olá Aura Parfums Moçambique!\n\nGostaria de confirmar minha encomenda:\n\n${summaryText}\n\n*Total:* ${formatMetical(total)}\n*Cliente:* ${name}\n*Contacto:* ${phone}\n*Destino:* ${province} - Bairro ${neighborhood}, ${addressDetails}`
       );
-      window.open(`https://wa.me/5511999998888?text=${message}`, '_blank');
+      window.open(`https://wa.me/258845557890?text=${message}`, '_blank');
     }
 
     setIsCompleted(true);
     onSuccess();
   };
 
-  const copyPixCode = () => {
-    navigator.clipboard.writeText(
-      '00020126580014br.gov.bcb.pix0136aura-parfums-pagamento@aura.com.br520400005303986540' +
-        total +
-        '.005802BR5920AURA PARFUMS STORE6009SAO PAULO62070503***6304ABCD'
-    );
-    setCopiedPix(true);
-    setTimeout(() => setCopiedPix(false), 2000);
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedAccount(true);
+    setTimeout(() => setCopiedAccount(false), 2000);
   };
 
   return (
@@ -81,13 +82,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div>
             <div className="border-b border-stone-200 pb-4 mb-6">
               <span className="text-[10px] uppercase font-mono tracking-widest text-amber-800 font-semibold block">
-                Finalização Segura
+                Moçambique · Encomenda Segura
               </span>
               <h2 className="font-serif text-2xl font-bold text-stone-900 mt-1">
-                Concluir Pedido
+                Concluir Encomenda
               </h2>
               <p className="text-xs text-stone-500 mt-1">
-                Revise os itens e preencha os dados para entrega segura.
+                Preencha os dados para entrega rápida em Maputo, Matola ou Províncias.
               </p>
             </div>
 
@@ -101,77 +102,111 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Ex: Beatriz Lima"
+                    placeholder="Ex: Samira Mondlane"
                     className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:border-stone-800"
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-700 font-medium mb-1">WhatsApp / Celular *</label>
+                  <label className="block text-stone-700 font-medium mb-1">Contacto M-Pesa / Celular *</label>
                   <input
                     type="tel"
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(11) 98765-4321"
+                    placeholder="+258 84/87 123 4567"
                     className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:border-stone-800"
                   />
                 </div>
               </div>
 
-              {/* Delivery Address */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="sm:col-span-2">
-                  <label className="block text-stone-700 font-medium mb-1">Endereço e Número *</label>
-                  <input
-                    type="text"
-                    required
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Rua Oscar Freire, 1200 - Apto 42"
-                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:border-stone-800"
-                  />
+              {/* Delivery Address in Mozambique */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">Província / Cidade *</label>
+                  <select
+                    value={province}
+                    onChange={(e) => setProvince(e.target.value)}
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:border-stone-800 bg-white"
+                  >
+                    <option value="Maputo Cidade">Maputo Cidade</option>
+                    <option value="Maputo Província (Matola)">Maputo Província (Matola)</option>
+                    <option value="Sofala (Beira)">Sofala (Beira)</option>
+                    <option value="Nampula">Nampula</option>
+                    <option value="Tete">Tete</option>
+                    <option value="Zambézia (Quelimane)">Zambézia (Quelimane)</option>
+                    <option value="Cabo Delgado (Pemba)">Cabo Delgado (Pemba)</option>
+                    <option value="Gaza (Xai-Xai)">Gaza (Xai-Xai)</option>
+                    <option value="Inhambane">Inhambane</option>
+                    <option value="Manica (Chimoio)">Manica (Chimoio)</option>
+                    <option value="Niassa (Lichinga)">Niassa (Lichinga)</option>
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-stone-700 font-medium mb-1">Cidade / UF *</label>
+                  <label className="block text-stone-700 font-medium mb-1">Bairro *</label>
                   <input
                     type="text"
                     required
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    placeholder="São Paulo - SP"
+                    value={neighborhood}
+                    onChange={(e) => setNeighborhood(e.target.value)}
+                    placeholder="Ex: Polana Cimento / Sommerschield"
                     className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:border-stone-800"
                   />
                 </div>
               </div>
 
-              {/* Payment Methods */}
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">Avenida, Rua ou Ponto de Referência *</label>
+                <input
+                  type="text"
+                  required
+                  value={addressDetails}
+                  onChange={(e) => setAddressDetails(e.target.value)}
+                  placeholder="Ex: Av. Julius Nyerere, Edifício Marés, Porta 3B"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:border-stone-800"
+                />
+              </div>
+
+              {/* Payment Methods in Mozambique */}
               <div className="pt-2">
-                <label className="block text-stone-700 font-medium mb-2">Forma de Pagamento:</label>
-                <div className="grid grid-cols-3 gap-2">
+                <label className="block text-stone-700 font-medium mb-2">Forma de Pagamento em Moçambique:</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod('pix')}
+                    onClick={() => setPaymentMethod('mpesa')}
                     className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 ${
-                      paymentMethod === 'pix'
-                        ? 'border-amber-800 bg-amber-50/60 text-stone-900 font-semibold shadow-xs'
+                      paymentMethod === 'mpesa'
+                        ? 'border-red-600 bg-red-50 text-red-950 font-bold shadow-xs'
                         : 'border-stone-200 hover:border-stone-300 text-stone-600'
                     }`}
                   >
-                    <QrCode className="w-5 h-5 text-amber-800" />
-                    <span>PIX (-5% extra)</span>
+                    <Smartphone className="w-5 h-5 text-red-600" />
+                    <span>M-Pesa</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod('cartao')}
+                    onClick={() => setPaymentMethod('emola')}
                     className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 ${
-                      paymentMethod === 'cartao'
-                        ? 'border-amber-800 bg-amber-50/60 text-stone-900 font-semibold shadow-xs'
+                      paymentMethod === 'emola'
+                        ? 'border-amber-600 bg-amber-50 text-amber-950 font-bold shadow-xs'
+                        : 'border-stone-200 hover:border-stone-300 text-stone-600'
+                    }`}
+                  >
+                    <Smartphone className="w-5 h-5 text-amber-700" />
+                    <span>e-Mola</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('transferencia')}
+                    className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 ${
+                      paymentMethod === 'transferencia'
+                        ? 'border-stone-900 bg-stone-100 text-stone-900 font-bold shadow-xs'
                         : 'border-stone-200 hover:border-stone-300 text-stone-600'
                     }`}
                   >
                     <CreditCard className="w-5 h-5 text-stone-800" />
-                    <span>Cartão (6x s/ juros)</span>
+                    <span>BIM / BCI</span>
                   </button>
 
                   <button
@@ -179,7 +214,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     onClick={() => setPaymentMethod('whatsapp')}
                     className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 ${
                       paymentMethod === 'whatsapp'
-                        ? 'border-emerald-600 bg-emerald-50 text-stone-900 font-semibold shadow-xs'
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold shadow-xs'
                         : 'border-stone-200 hover:border-stone-300 text-stone-600'
                     }`}
                   >
@@ -192,34 +227,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               {/* Order Breakdown Box */}
               <div className="bg-stone-50 rounded-xl p-3 border border-stone-200/80 space-y-1.5 text-xs">
                 <div className="flex justify-between text-stone-600">
-                  <span>Itens selecionados ({items.length})</span>
-                  <span>R$ {subtotal},00</span>
+                  <span>Itens no cesto ({items.length})</span>
+                  <span>{formatMetical(subtotal)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-700">
                     <span>Desconto de Cupom</span>
-                    <span>- R$ {discount},00</span>
-                  </div>
-                )}
-                {pixDiscount > 0 && (
-                  <div className="flex justify-between text-emerald-700 font-medium">
-                    <span>Desconto Especial PIX (5%)</span>
-                    <span>- R$ {pixDiscount},00</span>
+                    <span>- {formatMetical(discount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-600">
-                  <span>Frete</span>
-                  <span>{shipping === 0 ? 'Grátis' : `R$ ${shipping},00`}</span>
+                  <span>Taxa de Entrega</span>
+                  <span>{shipping === 0 ? 'Grátis' : formatMetical(shipping)}</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-stone-900 pt-2 border-t border-stone-200">
                   <span>Total Final:</span>
-                  <span className="font-serif text-lg text-amber-950">R$ {total},00</span>
+                  <span className="font-serif text-lg text-amber-950">{formatMetical(total)}</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 text-[11px] text-stone-500 pt-1">
                 <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Compra protegida com criptografia SSL e garantia de satisfação 7 dias.</span>
+                <span>Perfumes 100% originais com entrega confirmada e acompanhamento pelo WhatsApp.</span>
               </div>
 
               <button
@@ -227,8 +256,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 className="w-full py-3.5 bg-stone-900 text-white rounded-xl font-medium text-sm hover:bg-stone-800 transition-colors shadow-md mt-4 cursor-pointer"
               >
                 {paymentMethod === 'whatsapp'
-                  ? 'Finalizar Pedido pelo WhatsApp'
-                  : `Confirmar Pedido · R$ ${total},00`}
+                  ? 'Confirmar Encomenda pelo WhatsApp'
+                  : `Confirmar Encomenda · ${formatMetical(total)}`}
               </button>
             </form>
           </div>
@@ -241,43 +270,117 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
             <div>
               <span className="text-xs uppercase font-mono tracking-widest text-stone-500">
-                Pedido Gerado com Sucesso!
+                Encomenda Registada com Sucesso!
               </span>
               <h3 className="font-serif text-2xl font-bold text-stone-900 mt-1">
-                Obrigado pela sua compra, {name}!
+                Muito obrigado, {name}!
               </h3>
               <p className="text-xs text-stone-500 mt-1">
-                Código do Pedido: <strong className="text-stone-900">{orderNumber}</strong>
+                Referência: <strong className="text-stone-900">{orderNumber}</strong>
               </p>
             </div>
 
-            {paymentMethod === 'pix' && (
-              <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-4 text-left space-y-3">
+            {/* M-Pesa Instructions */}
+            {paymentMethod === 'mpesa' && (
+              <div className="bg-red-50/80 border border-red-200 rounded-xl p-4 text-left space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-stone-900">
-                    Chave PIX Copia e Cola (R$ {total},00)
+                  <span className="text-xs font-bold text-red-950">
+                    Instruções M-Pesa ({formatMetical(total)})
                   </span>
-                  <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-medium">
-                    Expira em 30 min
+                  <span className="text-[10px] bg-red-200 text-red-900 px-2 py-0.5 rounded font-semibold">
+                    Vodacom
                   </span>
                 </div>
-                <div className="bg-white p-2.5 rounded border border-amber-200/80 font-mono text-[11px] text-stone-600 break-all select-all">
-                  00020126580014br.gov.bcb.pix0136aura-parfums-pagamento@aura.com.br520400005303986540{total}.005802BR5920AURA
+                <div className="text-xs text-stone-700 space-y-1">
+                  <p>1. Abra o M-Pesa no seu celular (<strong>*150#</strong> ou App M-Pesa).</p>
+                  <p>2. Selecione <strong>Transferir Dinheiro</strong> para o número:</p>
+                </div>
+                <div className="bg-white p-2.5 rounded border border-red-200 font-mono text-sm font-bold text-stone-900 text-center select-all">
+                  {mpesaNumber} (Aura Parfums Lda)
                 </div>
                 <button
                   type="button"
-                  onClick={copyPixCode}
-                  className="w-full py-2 bg-stone-900 text-white rounded-lg text-xs font-medium hover:bg-stone-800 transition-colors flex items-center justify-center gap-1.5"
+                  onClick={() => copyToClipboard(mpesaNumber)}
+                  className="w-full py-2 bg-red-700 text-white rounded-lg text-xs font-medium hover:bg-red-800 transition-colors flex items-center justify-center gap-1.5"
                 >
-                  {copiedPix ? (
+                  {copiedAccount ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Chave PIX Copiada com Sucesso!</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-300" />
+                      <span>Número M-Pesa Copiado!</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5" />
-                      <span>Copiar Código PIX</span>
+                      <span>Copiar Número M-Pesa</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* e-Mola Instructions */}
+            {paymentMethod === 'emola' && (
+              <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-4 text-left space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-amber-950">
+                    Instruções e-Mola ({formatMetical(total)})
+                  </span>
+                  <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-semibold">
+                    Movitel
+                  </span>
+                </div>
+                <div className="text-xs text-stone-700 space-y-1">
+                  <p>1. Digite <strong>*898#</strong> no seu celular Movitel.</p>
+                  <p>2. Envie o valor de <strong>{formatMetical(total)}</strong> para o número:</p>
+                </div>
+                <div className="bg-white p-2.5 rounded border border-amber-200 font-mono text-sm font-bold text-stone-900 text-center select-all">
+                  {emolaNumber} (Aura Parfums Lda)
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(emolaNumber)}
+                  className="w-full py-2 bg-amber-700 text-white rounded-lg text-xs font-medium hover:bg-amber-800 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  {copiedAccount ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-300" />
+                      <span>Número e-Mola Copiado!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copiar Número e-Mola</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* BIM / BCI Bank Transfer */}
+            {paymentMethod === 'transferencia' && (
+              <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 text-left space-y-3">
+                <span className="text-xs font-bold text-stone-900 block">
+                  Transferência Bancária ({formatMetical(total)})
+                </span>
+                <div className="bg-white p-2.5 rounded border border-stone-200 font-mono text-xs text-stone-700 space-y-1">
+                  <div><strong>Banco:</strong> Millennium BIM</div>
+                  <div><strong>Titular:</strong> Aura Parfums Moçambique Lda</div>
+                  <div><strong>NIB:</strong> {bimNib}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(bimNib)}
+                  className="w-full py-2 bg-stone-900 text-white rounded-lg text-xs font-medium hover:bg-stone-800 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  {copiedAccount ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>NIB Copiado!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copiar NIB do Millennium BIM</span>
                     </>
                   )}
                 </button>
@@ -285,17 +388,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             )}
 
             <div className="bg-stone-50 p-4 rounded-xl text-left border border-stone-200 text-xs space-y-1.5 text-stone-600">
-              <p>📦 <strong>Previsão de Envio:</strong> Próximo dia útil com código de rastreamento.</p>
-              <p>🎁 <strong>Brindes Inclusos:</strong> 2 amostras de 2ml das novidades da estação.</p>
-              <p>📍 <strong>Destino:</strong> {address}, {city}</p>
+              <p>📦 <strong>Previsão de Entrega:</strong> 24h para Maputo/Matola e 48h a 72h para outras províncias.</p>
+              <p>🎁 <strong>Ofertas Inclusas:</strong> 2 amostras de 2ml das fragrâncias mais exclusivas.</p>
+              <p>📍 <strong>Destino:</strong> {neighborhood}, {addressDetails} - {province}</p>
             </div>
 
-            <button
-              onClick={onClose}
-              className="px-6 py-2.5 bg-stone-900 text-white rounded-lg text-xs font-medium hover:bg-stone-800 transition-colors"
-            >
-              Voltar à Loja
-            </button>
+            <div className="flex gap-2 justify-center">
+              <a
+                href={`https://wa.me/258845557890?text=${encodeURIComponent(`Olá! Fiz a encomenda ${orderNumber} no valor de ${formatMetical(total)}. Segue o comprovativo:`)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2.5 bg-emerald-700 text-white rounded-lg text-xs font-medium hover:bg-emerald-800 transition-colors inline-flex items-center gap-1.5"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Enviar Comprovativo no WhatsApp</span>
+              </a>
+              <button
+                onClick={onClose}
+                className="px-4 py-2.5 bg-stone-200 text-stone-800 rounded-lg text-xs font-medium hover:bg-stone-300 transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         )}
       </div>

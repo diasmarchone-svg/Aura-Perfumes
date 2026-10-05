@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CartItem } from '../types';
-import { X, Trash2, ArrowRight, ShoppingBag, Tag, Check, Truck } from 'lucide-react';
+import { X, Trash2, ArrowRight, ShoppingBag, Tag, Check, Truck, MapPin } from 'lucide-react';
+import { formatMetical } from '../utils/format';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -24,8 +25,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponError, setCouponError] = useState('');
-  const [cep, setCep] = useState('');
-  const [shippingCalculated, setShippingCalculated] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState('Maputo');
+  const [shippingCalculated, setShippingCalculated] = useState(true);
 
   if (!isOpen) return null;
 
@@ -35,32 +36,33 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   let discount = 0;
   if (appliedCoupon === 'PRIMEIRA10') {
     discount = Math.round(subtotal * 0.1);
-  } else if (appliedCoupon === 'AURA20') {
-    discount = Math.min(subtotal, 20);
+  } else if (appliedCoupon === 'MAPUTO200') {
+    discount = Math.min(subtotal, 200);
   }
 
-  // Shipping logic: free over R$ 250, otherwise R$ 18
-  const freeShippingThreshold = 250;
+  // Shipping logic for Mozambique
+  const freeShippingThreshold = 3500;
   const isFreeShipping = subtotal >= freeShippingThreshold;
-  const shippingCost = shippingCalculated ? (isFreeShipping ? 0 : 18) : 0;
+
+  let baseShipping = 200;
+  if (selectedProvince === 'Maputo' || selectedProvince === 'Matola') {
+    baseShipping = 200;
+  } else {
+    baseShipping = 400; // Outras províncias (Beira, Nampula, etc.)
+  }
+
+  const shippingCost = isFreeShipping ? 0 : baseShipping;
   const total = Math.max(0, subtotal - discount + shippingCost);
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
     setCouponError('');
     const clean = couponCode.trim().toUpperCase();
-    if (clean === 'PRIMEIRA10' || clean === 'AURA20') {
+    if (clean === 'PRIMEIRA10' || clean === 'MAPUTO200') {
       setAppliedCoupon(clean);
       setCouponCode('');
     } else {
       setCouponError('Cupom inválido. Experimente: PRIMEIRA10');
-    }
-  };
-
-  const handleCalcShipping = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (cep.length >= 8) {
-      setShippingCalculated(true);
     }
   };
 
@@ -74,7 +76,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         <div className="p-4 sm:p-5 border-b border-stone-200 flex items-center justify-between bg-[#FAF8F5]">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-stone-900" />
-            <h2 className="font-serif text-xl font-bold text-stone-900">Seu Carrinho</h2>
+            <h2 className="font-serif text-xl font-bold text-stone-900">Seu Cesto</h2>
             <span className="text-xs bg-stone-200 text-stone-700 px-2 py-0.5 rounded-full font-medium">
               {items.reduce((acc, it) => acc + it.quantity, 0)} itens
             </span>
@@ -82,7 +84,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <button
             onClick={onClose}
             className="p-1.5 text-stone-500 hover:text-stone-900 rounded-full hover:bg-stone-200 transition-colors"
-            aria-label="Fechar carrinho"
+            aria-label="Fechar cesto"
           >
             <X className="w-5 h-5" />
           </button>
@@ -93,12 +95,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           {subtotal >= freeShippingThreshold ? (
             <div className="flex items-center gap-2 font-medium text-emerald-800">
               <Check className="w-4 h-4 text-emerald-600" />
-              <span>Parabéns! Você ganhou <strong>Frete Grátis</strong> para todo Brasil.</span>
+              <span>Parabéns! Você tem <strong>Entrega Grátis</strong> em Moçambique.</span>
             </div>
           ) : (
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span>Faltam <strong>R$ {freeShippingThreshold - subtotal},00</strong> para Frete Grátis</span>
+                <span>Faltam <strong>{formatMetical(freeShippingThreshold - subtotal)}</strong> para Entrega Grátis</span>
                 <span>{Math.round((subtotal / freeShippingThreshold) * 100)}%</span>
               </div>
               <div className="w-full bg-amber-200/60 rounded-full h-1.5 overflow-hidden">
@@ -118,9 +120,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center text-stone-400">
                 <ShoppingBag className="w-8 h-8" />
               </div>
-              <h3 className="font-serif text-lg text-stone-800 font-semibold">Seu carrinho está vazio</h3>
+              <h3 className="font-serif text-lg text-stone-800 font-semibold">Seu cesto está vazio</h3>
               <p className="text-xs text-stone-500 max-w-xs">
-                Navegue pelas nossas fragrâncias exclusivas e adicione as suas favoritas.
+                Navegue pelas nossas fragrâncias exclusivas e selecione suas favoritas.
               </p>
               <button
                 onClick={onClose}
@@ -149,7 +151,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       Frasco de {item.size} · {item.perfume.concentration}
                     </p>
                     <div className="text-xs font-bold text-stone-900 mt-1">
-                      R$ {item.price},00
+                      {formatMetical(item.price)}
                     </div>
 
                     {/* Quantity controls */}
@@ -188,7 +190,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
                   </div>
                   <div className="text-right text-xs font-bold text-stone-900 self-start">
-                    R$ {item.price * item.quantity},00
+                    {formatMetical(item.price * item.quantity)}
                   </div>
                 </div>
               ))}
@@ -198,7 +200,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   onClick={onClearCart}
                   className="text-[11px] text-stone-400 hover:text-rose-600 transition-colors underline"
                 >
-                  Limpar todo o carrinho
+                  Esvaziar todo o cesto
                 </button>
               </div>
             </>
@@ -222,7 +224,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
               <button
                 type="submit"
-                className="px-3 py-2 bg-stone-800 text-white rounded-lg text-xs font-medium hover:bg-stone-700 transition-colors"
+                className="px-3 py-2 bg-stone-800 text-white rounded-lg text-xs font-medium hover:bg-stone-700 transition-colors cursor-pointer"
               >
                 Aplicar
               </button>
@@ -240,52 +242,52 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
             )}
 
-            {/* CEP Simulator */}
-            <form onSubmit={handleCalcShipping} className="flex gap-2 items-center">
-              <div className="relative flex-1">
-                <Truck className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
-                <input
-                  type="text"
-                  maxLength={9}
-                  value={cep}
-                  onChange={(e) => setCep(e.target.value.replace(/\D/g, ''))}
-                  placeholder="Calcular CEP de entrega"
-                  className="w-full bg-white border border-stone-300 rounded-lg pl-8 pr-2 py-2 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-stone-500"
-                />
-              </div>
-              <button
-                type="submit"
-                className="px-3 py-2 bg-stone-200 text-stone-800 rounded-lg text-xs font-medium hover:bg-stone-300 transition-colors"
+            {/* Local de Entrega em Moçambique */}
+            <div className="bg-white p-2.5 rounded-lg border border-stone-200 space-y-1">
+              <label className="text-[11px] text-stone-600 flex items-center gap-1 font-medium">
+                <MapPin className="w-3 h-3 text-amber-800" />
+                <span>Destino de Entrega (Moçambique):</span>
+              </label>
+              <select
+                value={selectedProvince}
+                onChange={(e) => setSelectedProvince(e.target.value)}
+                className="w-full bg-stone-50 border border-stone-200 rounded p-1.5 text-xs text-stone-800 focus:outline-none"
               >
-                Calcular
-              </button>
-            </form>
+                <option value="Maputo">Cidade de Maputo (200 MT / Grátis &gt; 3.500 MT)</option>
+                <option value="Matola">Matola (200 MT / Grátis &gt; 3.500 MT)</option>
+                <option value="Beira">Sofala - Beira (400 MT)</option>
+                <option value="Nampula">Nampula (400 MT)</option>
+                <option value="Tete">Tete (400 MT)</option>
+                <option value="Zambézia">Zambézia - Quelimane (400 MT)</option>
+                <option value="Cabo Delgado">Cabo Delgado - Pemba (400 MT)</option>
+                <option value="Gaza">Gaza - Xai-Xai (350 MT)</option>
+                <option value="Inhambane">Inhambane (350 MT)</option>
+                <option value="Manica">Manica - Chimoio (400 MT)</option>
+                <option value="Niassa">Niassa - Lichinga (450 MT)</option>
+              </select>
+            </div>
 
             {/* Summary lines */}
             <div className="space-y-1.5 text-xs text-stone-600 pt-2 border-t border-stone-200">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>R$ {subtotal},00</span>
+                <span>{formatMetical(subtotal)}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-emerald-700 font-medium">
                   <span>Desconto de Cupom</span>
-                  <span>- R$ {discount},00</span>
+                  <span>- {formatMetical(discount)}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span>Frete</span>
+                <span>Taxa de Entrega</span>
                 <span>
-                  {shippingCalculated
-                    ? shippingCost === 0
-                      ? 'Grátis'
-                      : `R$ ${shippingCost},00`
-                    : 'A calcular no checkout'}
+                  {shippingCost === 0 ? 'Grátis' : formatMetical(shippingCost)}
                 </span>
               </div>
               <div className="flex justify-between text-sm font-bold text-stone-900 pt-1 border-t border-stone-200">
                 <span>Total Estimado</span>
-                <span className="font-serif text-base">R$ {total},00</span>
+                <span className="font-serif text-base text-amber-950 font-bold">{formatMetical(total)}</span>
               </div>
             </div>
 
@@ -294,7 +296,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               onClick={() => onCheckout(discount, shippingCost)}
               className="w-full py-3.5 bg-stone-900 text-white rounded-xl font-medium text-sm hover:bg-stone-800 transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
             >
-              <span>Prosseguir para Checkout</span>
+              <span>Concluir Encomenda</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

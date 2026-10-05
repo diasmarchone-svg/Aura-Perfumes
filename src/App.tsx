@@ -170,7 +170,7 @@ export default function App() {
               Fragrâncias Exclusivas
             </h2>
             <p className="text-stone-500 text-xs sm:text-sm mt-1 max-w-xl">
-              Selecione o frasco e o tamanho desejado (50ml ou 100ml) para entrega expressa em todo o país.
+              Selecione o frasco e o volume desejado (50ml ou 100ml) para entrega expressa em Maputo e todas as províncias de Moçambique.
             </p>
           </div>
 

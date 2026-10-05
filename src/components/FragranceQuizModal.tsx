@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Perfume } from '../types';
 import { X, Sparkles, ArrowRight, RotateCcw, ShoppingBag, Eye, Check } from 'lucide-react';
+import { formatMetical } from '../utils/format';
 
 interface FragranceQuizModalProps {
   isOpen: boolean;
@@ -225,7 +226,7 @@ export const FragranceQuizModal: React.FC<FragranceQuizModalProps> = ({
                   {matchedPerfume.description}
                 </p>
                 <div className="text-sm font-bold text-stone-900 pt-1 font-serif">
-                  A partir de R$ {matchedPerfume.price50ml},00 (50ml)
+                  A partir de {formatMetical(matchedPerfume.price50ml)} (50ml)
                 </div>
               </div>
             </div>
